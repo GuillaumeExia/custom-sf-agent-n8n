@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>N8nAgentChatController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>Agent_Context_Field__mdt</name>
+    </customMetadataTypeAccesses>
+    <description>Use the "Agent" utility-bar chat: calls the n8n Agent through the n8n_Agent Named Credential.</description>
+    <externalCredentialPrincipalAccesses>
+        <enabled>true</enabled>
+        <externalCredentialPrincipal>n8n_Agent-n8n_Agent_Principal</externalCredentialPrincipal>
+    </externalCredentialPrincipalAccesses>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>n8n Agent Chat</label>
+</PermissionSet>

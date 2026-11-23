@@ -1,0 +1,43 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.messages {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+/* Replies are plain text: keep the Agent's line breaks without rendering any HTML. */
+.message-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.typing .dot {
+    display: inline-block;
+    width: 0.375rem;
+    height: 0.375rem;
+    margin: 0 0.125rem;
+    border-radius: 50%;
+    background: var(--slds-g-color-neutral-base-50, #747474);
+    animation: blink 1.2s infinite ease-in-out;
+}
+
+.typing .dot:nth-child(3) { animation-delay: 0.2s; }
+.typing .dot:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes blink {
+    0%, 80%, 100% { opacity: 0.25; }
+    40% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .typing .dot { animation: none; opacity: 0.6; }
+}

@@ -1,0 +1,118 @@
+<template>
+    <div class="chat slds-theme_default">
+        <!-- Header -->
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-around_x-small slds-border_bottom">
+            <div class="slds-grid slds-grid_vertical-align-center slds-truncate">
+                <template lwc:if={hasRecord}>
+                    <lightning-badge
+                        class="slds-truncate"
+                        label={contextLabel}
+                        icon-name="utility:record_lookup"
+                        title={contextLabel}
+                    ></lightning-badge>
+                </template>
+                <template lwc:else>
+                    <span class="slds-text-color_weak slds-text-body_small">No record context</span>
+                </template>
+            </div>
+            <lightning-button-icon
+                icon-name="utility:new"
+                variant="bare"
+                alternative-text="New conversation"
+                title="New conversation"
+                onclick={handleNewConversation}
+            ></lightning-button-icon>
+        </div>
+
+        <template lwc:if={hasRecord}>
+            <div class="slds-p-horizontal_x-small slds-p-top_xx-small">
+                <lightning-input
+                    type="toggle"
+                    label="Share this record with the assistant"
+                    message-toggle-active=""
+                    message-toggle-inactive=""
+                    checked={includeRecord}
+                    onchange={handleToggleRecord}
+                ></lightning-input>
+            </div>
+        </template>
+
+        <!-- Messages -->
+        <div class="messages slds-scrollable_y slds-p-around_x-small" lwc:ref="scroller">
+            <template lwc:if={isEmpty}>
+                <div class="slds-text-align_center slds-text-color_weak slds-p-top_large">
+                    Ask about UK used cars: tax, ULEZ, MOT, reliability, prices or live stock.
+                </div>
+            </template>
+            <ul class="slds-chat-list">
+                <template for:each={messages} for:item="msg">
+                    <li key={msg.id} class={msg.itemClass}>
+                        <div class="slds-chat-message">
+                            <div class="slds-chat-message__body">
+                                <div class={msg.bubbleClass}>
+                                    <span class="message-text">{msg.text}</span>
+                                </div>
+                                <div class="slds-chat-message__meta">
+                                    {msg.author} •
+                                    <lightning-formatted-date-time
+                                        value={msg.ts}
+                                        hour="2-digit"
+                                        minute="2-digit"
+                                    ></lightning-formatted-date-time>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </template>
+                <template lwc:if={isSending}>
+                    <li class="slds-chat-listitem slds-chat-listitem_inbound">
+                        <div class="slds-chat-message">
+                            <div class="slds-chat-message__body">
+                                <div class="slds-chat-message__text slds-chat-message__text_inbound typing" aria-live="polite">
+                                    <span class="slds-assistive-text">The assistant is typing</span>
+                                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </template>
+            </ul>
+        </div>
+
+        <!-- Error banner -->
+        <template lwc:if={errorMessage}>
+            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-horizontal_x-small" role="alert">
+                <span class="slds-m-right_x-small">{errorMessage}</span>
+                <lightning-button
+                    label="Retry"
+                    variant="inverse"
+                    onclick={handleRetry}
+                    disabled={isSending}
+                ></lightning-button>
+            </div>
+        </template>
+
+        <!-- Composer -->
+        <div class="slds-p-around_x-small slds-border_top">
+            <lightning-textarea
+                label="Message"
+                variant="label-hidden"
+                placeholder="Type a message. Enter to send, Shift+Enter for a new line."
+                max-length="4000"
+                value={draft}
+                onchange={handleDraftChange}
+                onkeydown={handleKeyDown}
+                disabled={isSending}
+            ></lightning-textarea>
+            <div class="slds-grid slds-grid_align-end slds-m-top_xx-small">
+                <lightning-button
+                    label="Send"
+                    variant="brand"
+                    icon-name="utility:send"
+                    onclick={handleSend}
+                    disabled={sendDisabled}
+                ></lightning-button>
+            </div>
+        </div>
+    </div>
+</template>

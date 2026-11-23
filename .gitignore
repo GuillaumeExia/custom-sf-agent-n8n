@@ -1,0 +1,23 @@
+# Salesforce CLI local state and test output
+.sf/
+.sfdx/
+coverage/
+.localdevserver/
+
+# Claude Code: local settings and the vendored skills bundle (tooling, not project source)
+.claude/settings.local.json
+.claude/skills/
+
+# Secrets: never commit keys, certificates or env files
+*.key
+*.pem
+*.crt
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+node_modules/
