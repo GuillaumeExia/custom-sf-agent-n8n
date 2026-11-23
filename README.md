@@ -1,5 +1,7 @@
 # Agent utility-bar chat: Salesforce → n8n Agent
 
+[![Apex tests](https://github.com/GuillaumeExia/custom-sf-agent-n8n/actions/workflows/apex-tests.yml/badge.svg)](https://github.com/GuillaumeExia/custom-sf-agent-n8n/actions/workflows/apex-tests.yml)
+
 An Agentforce-style side panel in the Lightning Experience **utility bar**. Internal users chat with the n8n Agent
 **"UK Car Assistant"**. The panel is on every page, keeps the conversation as you navigate, and knows which record is on screen.
 
@@ -90,6 +92,23 @@ active record sends no record data.
 - The toggle "Share this record with the assistant" leaves the record out of the next messages.
 - `sessionId` = `crypto.randomUUID()` in `sessionStorage`; "New conversation" creates a new one (new Agent memory thread).
 - Messages are plain text (no HTML rendering). Errors show a friendly banner with **Retry**; raw response bodies are never shown.
+
+## Continuous integration
+
+`.github/workflows/apex-tests.yml` runs on pushes to `main`, on pull requests from branches of this repository, and on demand.
+It logs in to the org with the JWT bearer flow, runs a **validate-only** deploy of `force-app` (compiles everything and runs
+`N8nAgentChatControllerTest`, then rolls back, so nothing is saved), and fails if a class is under 90% coverage.
+
+To use it with your own org:
+1. Create a CI user with a permission set that can validate deploys and run the tests: API Enabled, View Setup,
+   Modify Metadata, Author Apex (+ View Roles), Customize Application (+ Manage Custom Permissions, Manage Translation),
+   Manage Profiles and Permission Sets, Manage Named Credentials, and create/read/edit/delete on Account and Contact
+   (the tests create and read them in user mode).
+2. Create an external client app with the JWT bearer flow and your certificate, pre-approved for that permission set only.
+3. Add three repository secrets: `SF_CI_CLIENT_ID` (consumer key), `SF_CI_USERNAME`, `SF_CI_JWT_KEY` (private key, PEM).
+
+Pull requests from forks don't receive secrets, so the job is skipped for them. Without the Manage Users permission the
+test that creates a low-access user is skipped; the deleted-record test still covers the same branch.
 
 ## Built with Claude Code skills (not included)
 
