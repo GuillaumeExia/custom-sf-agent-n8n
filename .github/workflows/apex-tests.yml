@@ -55,8 +55,9 @@ jobs:
             --jwt-key-file "$key_file" \
             --username "$SF_CI_USERNAME" \
             --instance-url https://login.salesforce.com \
-            --alias ci
+            --alias ci > /dev/null  # its output includes the org ID; keep public logs clean
           rm -f "$key_file"
+          echo "Authenticated."
 
       - name: Validate deploy and run Apex tests
         run: |
@@ -94,6 +95,12 @@ jobs:
             awk '{ printf "| %s | %.1f%% |\n", $1, $2 }' coverage.txt
           } >> "$GITHUB_STEP_SUMMARY"
           awk -v min="$MIN_COVERAGE" '$2 < min { printf "::error::%s coverage %.1f%% is below %s%%\n", $1, $2, min; bad = 1 } END { exit bad }' coverage.txt
+
+      - name: Remove org details from the JUnit report
+        if: always()
+        run: |
+          # The CLI writes username, orgId and hostname properties; artifacts of a public repo are downloadable.
+          find test-results -name '*.xml' -exec sed -i -E '/<property name="(username|orgId|hostname)"/d' {} + 2>/dev/null || true
 
       - name: Upload test results
         if: always()
