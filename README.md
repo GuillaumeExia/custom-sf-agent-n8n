@@ -3,6 +3,10 @@
 An Agentforce-style side panel in the Lightning Experience **utility bar**. Internal users chat with the n8n Agent
 **"UK Car Assistant"**. The panel is on every page, keeps the conversation as you navigate, and knows which record is on screen.
 
+<p align="center">
+  <img src="docs/chat-panel.png" width="380" alt="The n8n Agent utility-bar panel on a Contact record: a context chip, the share-record toggle, a question about ULEZ compliance and the Agent's plain-text reply">
+</p>
+
 ```
 LWC n8nAgentChat (utility bar)
   └─ Apex N8nAgentChatController.sendMessage   (identity from UserInfo, record fields WITH USER_MODE)
