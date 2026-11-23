@@ -87,6 +87,20 @@ active record sends no record data.
 - `sessionId` = `crypto.randomUUID()` in `sessionStorage`; "New conversation" creates a new one (new Agent memory thread).
 - Messages are plain text (no HTML rendering). Errors show a friendly banner with **Retry**; raw response bodies are never shown.
 
+## Built with Claude Code skills (not included)
+
+This project was built with [Claude Code](https://claude.com/claude-code) using a local `salesforce-dev` skills bundle
+(Apex and Apex tests, LWC and SLDS, Named/External Credentials, custom metadata types, permission sets, FlexiPages,
+Metadata API context, and the Headless 360 MCP workflow). The bundle is third-party Salesforce material without a
+redistribution license, so it is **not included** in this repository and `.claude/skills/` is git-ignored.
+
+To work on this project the same way:
+- Put your own copy of the skills in `.claude/skills/` (Claude Code loads project skills from there), or
+- Use the Salesforce Headless 360 MCP, whose `discover` / `describe` tools serve the same skills
+  (for example `platform-apex-generate`, `experience-lwc-generate`, `named-credentials-setup`).
+
+The n8n side used the official n8n skills plugin for Claude Code.
+
 ## Known limitations
 
 - The utility opens from the bottom utility bar (not a right-hand docked panel like Agentforce); no pop-out in the standard Sales app.
