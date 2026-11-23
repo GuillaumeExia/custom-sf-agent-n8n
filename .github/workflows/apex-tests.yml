@@ -100,7 +100,13 @@ jobs:
         if: always()
         run: |
           # The CLI writes username, orgId and hostname properties; artifacts of a public repo are downloadable.
-          find test-results -name '*.xml' -exec sed -i -E '/<property name="(username|orgId|hostname)"/d' {} + 2>/dev/null || true
+          # It also sets a hostname attribute (the org's domain) on <testsuite>.
+          find test-results -name '*.xml' -exec sed -i -E \
+            -e '/<property name="(username|orgId|hostname)"/d' \
+            -e 's/ hostname="[^"]*"//g' {} +
+          if grep -rqiE 'name="(username|orgId)"|hostname="|my\.salesforce\.com' test-results --include='*.xml'; then
+            echo "::error::Org details are still present in the JUnit report"; exit 1
+          fi
 
       - name: Upload test results
         if: always()
