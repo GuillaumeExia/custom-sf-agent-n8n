@@ -26,7 +26,7 @@ LWC n8nAgentChat (utility bar)
 | Path | What |
 |---|---|
 | `knowledge/uk-used-car-faq.md` | Agent knowledge (also uploaded as the Agent skill "UK used-car FAQ") |
-| `n8n/sf-utility-chat-workflow.ts` | Workflow SDK source of the bridge workflow (node positions and groups included) |
+| `n8n/sf-utility-chat-workflow.ts` | Workflow SDK source of the bridge workflow |
 | `force-app/main/default/externalCredentials/` | `n8n_Agent` (Custom protocol, `X-SF-Signature` header from the principal parameter) |
 | `force-app/main/default/namedCredentials/` | `n8n_Agent` → your n8n base URL |
 | `force-app/main/default/objects/Agent_Context_Field__mdt/` + `customMetadata/` | Which fields of which object are sent as context |
