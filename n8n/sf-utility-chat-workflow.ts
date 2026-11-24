@@ -159,7 +159,7 @@ const chatSettings = node({
       includeOtherFields: false,
       assignments: {
         assignments: [
-          { id: 'debug', name: 'debug', type: 'boolean', value: true },
+          { id: 'debug', name: 'debug', type: 'boolean', value: false },
           { id: 'showUserInfo', name: 'showUserInfo', type: 'boolean', value: true },
           { id: 'startedAt', name: 'startedAt', type: 'number', value: expr('{{ $now.toMillis() }}') },
         ],
@@ -168,7 +168,7 @@ const chatSettings = node({
     },
     notes: "TOGGLES. debug: append a debug block (execution, timing, session, user lookup, record, tools, tokens) to every reply. showUserInfo: show the chatting user's Salesforce details above the first reply. Change, then publish the workflow.",
   },
-  output: [{ debug: true, showUserInfo: true, startedAt: 1795479789444 }],
+  output: [{ debug: false, showUserInfo: true, startedAt: 1795479789444 }],
 });
 
 const checkFirstMessage = node({
