@@ -15,9 +15,10 @@ LWC n8nAgentChat (utility bar)
        └─ Named Credential n8n_Agent            (adds X-SF-Signature from External Credential n8n_Agent)
             └─ n8n workflow "SF Utility Chat → Agent"   POST /webhook/sf-utility-chat
                  ├─ validate (400) · org check (403)
+                 ├─ first message only: Salesforce JWT → the chatting user's own User record
                  └─ Message an Agent → "UK Car Assistant"  (session sf-<userId>-<sessionId>)
                       └─ Autoza public MCP (read-only tools) + FAQ skill
-                 ← { reply, sessionId }   ·   502 if the Agent fails
+                 ← { reply, sessionId }   ·   reply = [user info] + answer + [debug]   ·   502 if the Agent fails
 ```
 
 ## Repository layout
@@ -25,7 +26,7 @@ LWC n8nAgentChat (utility bar)
 | Path | What |
 |---|---|
 | `knowledge/uk-used-car-faq.md` | Agent knowledge (also uploaded as the Agent skill "UK used-car FAQ") |
-| `n8n/sf-utility-chat-workflow.ts` | Workflow SDK source of the bridge workflow |
+| `n8n/sf-utility-chat-workflow.ts` | Workflow SDK source of the bridge workflow (node positions and groups included) |
 | `force-app/main/default/externalCredentials/` | `n8n_Agent` (Custom protocol, `X-SF-Signature` header from the principal parameter) |
 | `force-app/main/default/namedCredentials/` | `n8n_Agent` → your n8n base URL |
 | `force-app/main/default/objects/Agent_Context_Field__mdt/` + `customMetadata/` | Which fields of which object are sent as context |
@@ -40,6 +41,21 @@ LWC n8nAgentChat (utility bar)
 | Agent | UK Car Assistant (first-class n8n Agent), OpenAI model, n8n memory |
 | Workflow | SF Utility Chat → Agent, built from `n8n/sf-utility-chat-workflow.ts` |
 | Webhook | `POST https://<your-n8n-host>/webhook/sf-utility-chat`, Header Auth `X-SF-Signature` |
+| User lookup | Salesforce node with a **Salesforce JWT API** credential (API-only integration user), first message only |
+| Toggles | Node **Chat settings**: `debug`, `showUserInfo` (change, then publish the workflow) |
+
+### Who's chatting and the debug block
+Both are built in n8n and written into the reply text, so the Salesforce panel needs no changes.
+- **First message.** n8n remembers which conversations (`sf-<userId>-<sessionId>`) it has seen in workflow static data
+  (no Data Table; entries expire after 7 days idle, max 2,000). Static data is saved only by production executions.
+- **User info.** On the first message the workflow queries the requesting user's **own** User record (name, title,
+  department, company, email, phone, city/country, manager) as the integration user, gives it to the Agent in the
+  `[context]` block and, with `showUserInfo`, writes it above the reply. The user id comes from Apex `UserInfo` and must
+  be a `005` id, so the query can only return the caller's record. An API-only integration user can't read Role or
+  Profile; the profile name comes from Apex. If the lookup fails the chat still answers.
+- **Debug block** (`debug`): execution id and duration, Agent session, first-message and lookup status, record context,
+  tools called, tokens and finish reason, below every reply. It is shown to **every** user while on: use it for
+  troubleshooting and demos, then switch it off.
 
 ### Knowledge
 The UK used-car FAQ: paperwork (V5C, HPI, write-off categories), MOT, VED, ULEZ/CAZ, consumer rights, finance (HP/PCP), EVs and hybrids,
@@ -66,6 +82,7 @@ The repository ships with placeholders. Set these before deploying:
 | `force-app/main/default/namedCredentials/n8n_Agent.namedCredential-meta.xml` | `https://your-n8n-host.example.com` | Your n8n base URL |
 | `n8n/sf-utility-chat-workflow.ts` | `ALLOWED_ORG_ID = '00D000000000000AAA'` | Your Salesforce org ID |
 | `n8n/sf-utility-chat-workflow.ts` | `AGENT_ID = 'YOUR_N8N_AGENT_ID'` | Your n8n Agent ID |
+| `n8n/sf-utility-chat-workflow.ts` | `SALESFORCE_JWT_CREDENTIAL = 'Salesforce JWT'` | Name of your n8n Salesforce JWT API credential |
 | `force-app/main/default/flexipages/LightningSales_UtilityBar.flexipage-meta.xml` | (standard Sales app) | Retrieve your own app's utility bar first if it already has items, then add the `c:n8nAgentChat` item |
 
 ## Setup
